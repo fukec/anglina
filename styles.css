@@ -1,0 +1,577 @@
+/* Základní reset a font */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f0f0f0;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* Kontejner aplikace */
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    min-height: calc(100vh - 40px);
+    position: relative;
+}
+
+/* Navigace */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.nav-btn.active {
+    color: #2196f3;
+}
+
+/* Obrazovky */
+.screen {
+    display: none;
+    margin-bottom: 60px;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Test */
+.test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.progress-container {
+    flex: 1;
+    background: #e0e0e0;
+    height: 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #2196f3;
+    border-radius: 5px;
+    width: 0;
+    transition: width 0.3s;
+}
+
+.question-counter {
+    font-weight: bold;
+    color: #2196f3;
+}
+
+.score-display {
+    font-weight: bold;
+}
+
+.question-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question-text {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.question-direction {
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.answer-section {
+    margin-top: 20px;
+}
+
+.answer-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.choice-buttons {
+    display: grid;
+    gap: 10px;
+}
+
+.choice-btn {
+    background: #e0e0e0;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.choice-btn:hover {
+    background: #d0d0d0;
+}
+
+.choice-btn.correct {
+    background: #4caf50;
+    color: #fff;
+}
+
+.choice-btn.wrong {
+    background: #f44336;
+    color: #fff;
+}
+
+.feedback {
+    margin-top: 15px;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.feedback.correct {
+    background: rgba(76, 175, 80, 0.1);
+    color: #2e7d32;
+}
+
+.feedback.wrong {
+    background: rgba(244, 67, 54, 0.1);
+    color: #c62828;
+}
+
+.test-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn {
+    background: #2196f3;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+    background: #1976d2;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: #2196f3;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-danger {
+    background: #f44336;
+    color: #fff;
+}
+
+.btn-success {
+    background: #4caf50;
+    color: #fff;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Výsledky testu */
+.results-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.score-big {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2196f3;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.score-details {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.wrong-answers {
+    margin-top: 20px;
+}
+
+.wrong-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(244, 67, 54, 0.1);
+    border-radius: 8px;
+}
+
+.correct-answer {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.perfect-score {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #4caf50;
+}
+
+/* Správa slovíček */
+.screen-header {
+    margin-bottom: 20px;
+}
+
+.vocab-stats {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.search-container {
+    margin-bottom: 15px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+}
+
+.vocabulary-list {
+    margin-bottom: 20px;
+}
+
+.vocab-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.vocab-words {
+    flex: 1;
+}
+
+.vocab-czech {
+    font-weight: bold;
+}
+
+.vocab-english {
+    color: #888;
+}
+
+.vocab-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.btn-icon:hover {
+    color: #2196f3;
+}
+
+.add-vocab-form {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Kamera a OCR */
+.camera-container {
+    margin-bottom: 20px;
+}
+
+.camera-preview {
+    background: #e0e0e0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    margin-bottom: 15px;
+    flex-direction: column;
+}
+
+.camera-placeholder {
+    text-align: center;
+}
+
+.camera-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+video, canvas {
+    width: 100%;
+    border-radius: 8px;
+    display: none;
+}
+
+.ocr-results {
+    margin-top: 20px;
+}
+
+.ocr-words {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.ocr-word-pair {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ocr-word-pair input {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid #2196f3;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+/* Statistiky */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2196f3;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 14px;
+}
+
+.chart-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.difficult-words {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.difficult-word {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.word-pair {
+    font-weight: bold;
+}
+
+.error-rate {
+    color: #f44336;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #2196f3;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* PWA Install Banner */
+.install-banner {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2196f3;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Notifikace */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4caf50;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.notification-error {
+    background: #f44336;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* Vlastní počet otázek */
+.input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.number-input {
+    width: 80px;
+    padding: 8px;
+    border: 2px solid #2196f3;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.number-input:disabled {
+    background: #f0f0f0;
+    border-color: #cccccc;
+}
+
+.select-input {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid #2196f3;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Skryté prvky */
+.hidden {
+    display: none;
+}
