@@ -14,7 +14,25 @@ let statistics = {
 };
 let deferredPrompt;
 let cameraStream = null;
+let deferredPrompt; 
 
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').hidden = false;
+});
+
+document.getElementById('installBtn').addEventListener('click', () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Uživatel přijal instalaci');
+            }
+            deferredPrompt = null;
+        });
+    }
+});
 // Inicializace aplikace
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inicializace aplikace...');
