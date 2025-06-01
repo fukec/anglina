@@ -830,38 +830,5 @@ function updateInputState() {
         customInput.disabled = true;
         customInput.value = '';
     }
-    function importFromCSV(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const csv = e.target.result;
-    const lines = csv.split('\n');
-    let newWords = [];
-    let maxId = Math.max(...vocabulary.map(w => w.id), 0);
-
-    lines.forEach((line) => {
-      if (!line.trim()) return;
-      const [cs, en] = line.split(';').map(s => s.trim());
-      if (cs && en && !vocabulary.some(w => w.cs === cs && w.en === en)) {
-        newWords.push({
-          id: ++maxId,
-          cs: cs,
-          en: en,
-          dateAdded: new Date(),
-          correctCount: 0,
-          wrongCount: 0
-        });
-      }
-    });
-
-    vocabulary.push(...newWords);
-    saveData();
-    displayVocabulary();
-    showNotification(`Naimportováno ${newWords.length} nových slovíček`, 'success');
-  };
-  reader.readAsText(file);
-}
-
+   
 }
