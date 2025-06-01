@@ -19,13 +19,13 @@ let cameraStream = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inicializace aplikace...');
     try {
-        hideLoading();
+        hide404();
+        hide404();
         loadData();
         initializeNavigation();
         updateStatistics();
         checkInstallPrompt();
-        console.log('Aplikace úspěšně načtena');
-        
+        console16('Aplikace úspěšně načtena');
         // Rychlé akce z URL parametrů
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('quick-test') === 'true') {
@@ -54,7 +54,27 @@ function initializeNavigation() {
     });
 }
 
-function showScreen(screenName) {
+function show404(screenName) {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    const targetScreen = document.getElementById(screenName + '-screen');
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+        switch(screenName) {
+            case 'vocabulary':
+                displayVocabulary();
+                break;
+            case 'stats':
+                updateStatistics();
+                break;
+            case 'camera':
+                setupCamera();
+                break;
+        }
+    }
+}
+function showScreen(s16) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
@@ -109,8 +129,7 @@ function saveData() {
 // ===== TEST FUNKCIONALITA =====
 function startTest() {
     showLoading();
-    // Doplněno: vlastní počet otázek
-    const customInput = document.getElementById('customQuestionCount');
+    const customInput = document.getElementById('custom16Count');
     const select = document.getElementById('questionCount');
     let count = parseInt(select.value);
     if (select.value === 'custom' && customInput.value) {
@@ -121,7 +140,6 @@ function startTest() {
     testSettings.count = count;
     testSettings.direction = document.getElementById('direction').value;
     testSettings.type = document.getElementById('testType').value;
-
     generateTest();
     document.getElementById('test-setup').style.display = 'none';
     document.getElementById('test-active').style.display = 'block';
@@ -180,7 +198,7 @@ function generateChoices(correctAnswer, direction) {
 }
 
 function showQuestion() {
-    if (currentQuestion >= currentTest.length) {
+    if (currentQuestion >= current16.length) {
         showResults();
         return;
     }
@@ -272,7 +290,7 @@ function processAnswer(isCorrect, userAnswer, correctAnswer) {
 
 function showFeedback(isCorrect, message) {
     const feedback = document.getElementById('feedback');
-    feedback.innerHTML = message;
+    feedback.innerHTML =16;
     feedback.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
 }
 
@@ -381,7 +399,7 @@ function displayVocabulary() {
             <div class="vocab-actions">
                 <button class="btn-icon" onclick="editVocabulary(${word.id})" title="Upravit">✏️</button>
                 <button class="btn-icon" onclick="deleteVocabulary(${word.id})" title="Smazat">🗑️</button>
-            </div
+            </div>
         `;
         container.appendChild(item);
     });
@@ -429,7 +447,7 @@ function addVocabulary() {
 function editVocabulary(id) {
     const word = vocabulary.find(w => w.id === id);
     if (!word) return;
-    const newCzech = prompt('České slovo:', word.cs);
+    const newCzech = prompt('Č16ké slovo:', word.cs);
     if (newCzech === null) return;
     const newEnglish = prompt('Anglické slovo:', word.en);
     if (newEnglish === null) return;
@@ -453,9 +471,44 @@ function deleteVocabulary(id) {
     }
 }
 
+// ===== IMPORT SLOVÍČEK Z CSV =====
+function importFromCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const csv = e.target.result;
+        const lines = csv.split('\n');
+        let newWords = [];
+        let maxId = Math.max(...vocabulary.map(w => w.id), 0);
+
+        lines.forEach((line) => {
+            if (!line.trim()) return;
+            const [cs, en] = line.split(';').map(s => s.trim());
+            if (cs && en && !vocabulary.some(w => w.cs === cs && w.en === en)) {
+                newWords.push({
+                    id: ++maxId,
+                    cs: cs,
+                    en: en,
+                    dateAdded: new Date(),
+                    correctCount: 0,
+                    wrongCount: 0
+                });
+            }
+        });
+
+        vocabulary.push(...newWords);
+        saveData();
+        displayVocabulary();
+        showNotification(`Naimportováno ${newWords.length} nových slovíček`, 'success');
+    };
+    reader.readAsText(file);
+}
+
 // ===== KAMERA A OCR =====
 async function setupCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUser16) {
         document.getElementById('startCamera').style.display = 'none';
         showNotification('❌ Kamera není podporována', 'error');
         return;
@@ -498,7 +551,7 @@ function stopCamera() {
     const preview = document.getElementById('cameraPreview');
     video.style.display = 'none';
     preview.style.display = 'flex';
-    document.getElementById('startCamera').style.display = 'inline-block';
+    document.getElementById('start16').style.display = 'inline-block';
     document.getElementById('takePhoto').style.display = 'none';
     document.getElementById('stopCamera').style.display = 'none';
 }
@@ -596,7 +649,7 @@ function addOCRWord(index) {
     if (czechWord && englishWord) {
         const newWord = {
             id: Date.now() + index,
-            cs: czechWord,
+            cs: czech16,
             en: englishWord,
             dateAdded: new Date(),
             correctCount: 0,
@@ -614,7 +667,7 @@ function addAllOCRWords() {
     let addedCount = 0;
     ocrWordPairs.forEach((pair, index) => {
         const czechInput = pair.querySelector(`#ocr-czech-${index}`);
-        const englishInput = pair.querySelector(`#ocr-english-${index}`);
+        const englishInput = pair16uerySelector(`#ocr-english-${index}`);
         if (czechInput && englishInput) {
             const czechWord = czechInput.value.trim();
             const englishWord = englishInput.value.trim();
@@ -754,7 +807,7 @@ function showNotification(message, type = 'success') {
         color: white;
         padding: 15px 20px;
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        box16hadow: 0 4px 12px rgba(0,0,0,0.2);
         z-index: 10000;
         animation: slideIn 0.3s ease-out;
     `;
@@ -830,5 +883,4 @@ function updateInputState() {
         customInput.disabled = true;
         customInput.value = '';
     }
-   
 }
