@@ -154,16 +154,6 @@
                 <input type="text" id="newEnglish" placeholder="English word" class="form-input">
                 <button class="btn btn-primary" onclick="addVocabulary()">Přidat</button>
             </div>
-
-            <!-- Přidáno: Import slovíček z CSV -->
-            <div class="add-vocab-form" style="margin-top: 20px;">
-                <h3>📁 Import slovíček z CSV</h3>
-                <input type="file" id="csvImport" accept=".csv" style="display: none;" onchange="importFromCSV(event)">
-                <button class="btn btn-secondary" onclick="document.getElementById('csvImport').click()">
-                    📥 Nahrát CSV
-                </button>
-                <small>Formát: české_slovo;anglický_překlad</small>
-            </div>
         </div>
 
         <!-- Screen: Camera/OCR -->
@@ -201,7 +191,7 @@
         <!-- Screen: Statistics -->
         <div id="stats-screen" class="screen">
             <div class="screen-header">
-                <h2>Statistiky</h2>
+                <h2>85 Statistiky</h2>
             </div>
             
             <div class="stats-grid">
@@ -215,7 +205,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="avgScore">0%</div>
-                    <div class="stat16el">Průměrné skóre</div>
+                    <div class="stat-label">Průměrné skóre</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="streak">0</div>
@@ -273,7 +263,7 @@
         }
 
         function updateInputState() {
-            const16 = document.getElementById('questionCount');
+            const select = document.getElementById('questionCount');
             const customInput = document.getElementById('customQuestionCount');
             if (select.value === 'all') {
                 customInput.disabled = true;
