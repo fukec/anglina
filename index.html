@@ -3,279 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test slovíček</title>
-    <meta name="description" content="Aplikace pro testování slovíček čeština-angličtina">
-    <meta name="theme-color" content="#2196f3">
-    
-    <!-- PWA manifest -->
-    <link rel="manifest" href="manifest.json">
-   
-    <!-- Apple specific -->
-    <meta name="mobile-web-app-capable" content="yes">
+    <title>Anglina - Učení anglických slovíček</title>
+
+    <!-- PWA Meta tags -->
+    <meta name="description" content="Aplikace pro učení anglických slovíček s podporou OCR a offline režimu">
+    <meta name="theme-color" content="#2196F3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Test slovíček">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .input-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .number-input {
-            width: 120px;
-            padding: 8px;
-            border: 2px solid #2196f3;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .number-input:disabled {
-            background-color: #f0f0f0;
-            border-color: #cccccc;
-        }
-        .select-input {
-            flex-grow: 1;
-        }
-    </style>
+    <meta name="apple-mobile-web-app-title" content="Anglina">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="icons/icon-180x180.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Hlavní navigace -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" data-screen="test">📝 Test</button>
-            <button class="nav-btn" data-screen="vocabulary">📚 Slovíčka</button>
-            <button class="nav-btn" data-screen="camera">📷 Přidat</button>
-            <button class="nav-btn" data-screen="stats">📊 Statistiky</button>
-        </nav>
-
-        <!-- Screen: Test -->
-        <div id="test-screen" class="screen active">
-            <div id="test-setup">
-                <h2>🎯 Nastavení testu</h2>
-                <div class="setting-group">
-                    <label>Počet otázek:</label>
-                    <div class="input-container">
-                        <input type="number" id="customQuestionCount" class="number-input" min="1" max="100" placeholder="Zadejte číslo" oninput="updateQuestionCount()">
-                        <select id="questionCount" class="select-input" onchange="updateInputState()">
-                            <option value="5">5 otázek</option>
-                            <option value="10" selected>10 otázek</option>
-                            <option value="20">20 otázek</option>
-                            <option value="50">50 otázek</option>
-                            <option value="custom">Vlastní počet</option>
-                            <option value="all">Všechna slovíčka</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="setting-group">
-                    <label>Směr překladu:</label>
-                    <select id="direction" class="select-input">
-                        <option value="cs-en">🇨🇿 → 🇬🇧 Čeština → Angličtina</option>
-                        <option value="en-cs">🇬🇧 → 🇨🇿 Angličtina → Čeština</option>
-                        <option value="mix">🔀 Mix obou směrů</option>
-                    </select>
-                </div>
-                
-                <div class="setting-group">
-                    <label>Typ testu:</label>
-                    <select id="testType" class="select-input">
-                        <option value="input">✍️ Psaní odpovědi</option>
-                        <option value="choice">✅ Výběr z možností</option>
-                    </select>
-                </div>
-                
-                <button class="btn btn-primary" onclick="startTest()">🚀 Začít test</button>
-            </div>
-            
-            <div id="test-active" style="display:none;">
-                <div class="test-header">
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="question-counter" id="questionCounter"></div>
-                    <div class="score-display" id="currentScore">Skóre: 0</div>
-                </div>
-                
-                <div class="question-card">
-                    <div class="question-text" id="questionText"></div>
-                    <div class="question-direction" id="questionDirection"></div>
-                </div>
-                
-                <div id="inputAnswer" class="answer-section">
-                    <input type="text" class="answer-input" id="answerInput" 
-                           placeholder="Zadejte překlad..." autocomplete="off">
-                    <button class="btn btn-primary" onclick="checkAnswer()">Odpovědět</button>
-                </div>
-                
-                <div id="choiceAnswer" class="answer-section" style="display:none;">
-                    <div class="choice-buttons" id="choiceButtons"></div>
-                </div>
-                
-                <div id="feedback" class="feedback"></div>
-                
-                <div class="test-controls">
-                    <button class="btn btn-secondary" onclick="skipQuestion()">⏭️ Přeskočit</button>
-                    <button class="btn btn-danger" onclick="endTest()">❌ Ukončit</button>
-                </div>
-            </div>
-            
-            <div id="test-results" style="display:none;">
-                <div class="results-card">
-                    <h2>🎉 Výsledky testu</h2>
-                    <div class="score-big" id="finalScore"></div>
-                    <div class="score-details" id="scoreDetails"></div>
-                    <div class="wrong-answers" id="wrongAnswers"></div>
-                    <div class="results-actions">
-                        <button class="btn btn-primary" onclick="restartTest()">🔄 Nový test</button>
-                        <button class="btn btn-secondary" onclick="reviewMistakes()">📖 Projít chyby</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Screen: Vocabulary Management -->
-        <div id="vocabulary-screen" class="screen">
-            <div class="screen-header">
-                <h2>📚 Správa slovíček</h2>
-                <div class="vocab-stats" id="vocabStats"></div>
-            </div>
-            
-            <div class="search-container">
-                <input type="text" id="searchVocab" placeholder="🔍 Hledat slovíčko..." 
-                       class="search-input" oninput="filterVocabulary()">
-            </div>
-            
-            <div class="vocabulary-list" id="vocabularyList"></div>
-            
-            <div class="add-vocab-form">
-                <h3>➕ Přidat nové slovíčko</h3>
-                <input type="text" id="newCzech" placeholder="České slovo" class="form-input">
-                <input type="text" id="newEnglish" placeholder="English word" class="form-input">
-                <button class="btn btn-primary" onclick="addVocabulary()">Přidat</button>
-            </div>
-        </div>
-
-        <!-- Screen: Camera/OCR -->
-        <div id="camera-screen" class="screen">
-            <div class="screen-header">
-                <h2>📷 Přidat z fotky</h2>
-                <p>Vyfotografujte slovíčka a aplikace je automaticky rozpozná</p>
-            </div>
-            
-            <div class="camera-container">
-                <video id="camera" autoplay playsinline style="display:none;"></video>
-                <canvas id="canvas" style="display:none;"></canvas>
-                <div id="cameraPreview" class="camera-preview">
-                    <div class="camera-placeholder">
-                        <div class="camera-icon">📷</div>
-                        <p>Klikněte pro spuštění kamery</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="camera-controls">
-                <button class="btn btn-primary" id="startCamera" onclick="startCamera()">📷 Spustit kameru</button>
-                <button class="btn btn-success" id="takePhoto" onclick="takePhoto()" style="display:none;">📸 Vyfotit</button>
-                <button class="btn btn-secondary" id="stopCamera" onclick="stopCamera()" style="display:none;">❌ Zastavit</button>
-            </div>
-            
-            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;">
-            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
-                📁 Nahrát z galerie
-            </button>
-            
-            <div id="ocrResults" class="ocr-results"></div>
-        </div>
-        
-        <!-- Screen: Statistics -->
-        <div id="stats-screen" class="screen">
-            <div class="screen-header">
-                <h2>85 Statistiky</h2>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalWords">0</div>
-                    <div class="stat-label">Celkem slovíček</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalTests">0</div>
-                    <div class="stat-label">Dokončených testů</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="avgScore">0%</div>
-                    <div class="stat-label">Průměrné skóre</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="streak">0</div>
-                    <div class="stat-label">Dnů v řadě</div>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <h3>📈 Pokrok v čase</h3>
-                <canvas id="progressChart" width="400" height="200"></canvas>
-            </div>
-            
-            <div class="difficult-words">
-                <h3>😰 Nejtěžší slovíčka</h3>
-                <div id="difficultWordsList"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PWA Install Banner -->
-    <div id="installBanner" class="install-banner" style="display:none;">
-        <div class="install-content">
-            <span>📱 Nainstalovat aplikaci?</span>
-            <button class="btn btn-primary btn-small" onclick="installPWA()">Instalovat</button>
-            <button class="btn btn-secondary btn-small" onclick="dismissInstall()">Později</button>
-        </div>
-    </div>
-
     <!-- Loading overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
-        <p>Načítání...</p>
+        <p>Načítám...</p>
     </div>
 
-    <!-- Tesseract.js na konci pro lepší výkon -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <!-- Install banner -->
+    <div id="installBanner" class="install-banner" style="display: none;">
+        <div class="banner-content">
+            <span>📱 Nainstalujte si aplikaci na domovskou obrazovku!</span>
+            <button onclick="installPWA()">Instalovat</button>
+            <button onclick="dismissInstall()">✕</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn active" data-screen="test">🎯 Test</button>
+        <button class="nav-btn" data-screen="vocabulary">📚 Slovíčka</button>
+        <button class="nav-btn" data-screen="camera">📷 Skenovat</button>
+        <button class="nav-btn" data-screen="stats">📊 Statistiky</button>
+    </nav>
+
+    <!-- Test Screen -->
+    <div class="screen active" id="test-screen">
+        <!-- Test Setup -->
+        <div id="test-setup" class="card">
+            <h2>🎯 Nastavení testu</h2>
+
+            <div class="form-group">
+                <label for="questionCount">Počet otázek:</label>
+                <select id="questionCount" onchange="updateInputState()">
+                    <option value="5">5 otázek</option>
+                    <option value="10" selected>10 otázek</option>
+                    <option value="15">15 otázek</option>
+                    <option value="20">20 otázek</option>
+                    <option value="custom">Vlastní počet</option>
+                    <option value="all">Všechny</option>
+                </select>
+                <input type="number" id="customQuestionCount" placeholder="Max 100" min="1" max="100" disabled onchange="updateQuestionCount()">
+            </div>
+
+            <div class="form-group">
+                <label for="direction">Směr překladu:</label>
+                <select id="direction">
+                    <option value="cs-en">🇨🇿 → 🇬🇧 Čeština → Angličtina</option>
+                    <option value="en-cs">🇬🇧 → 🇨🇿 Angličtina → Čeština</option>
+                    <option value="mix" selected>🔀 Smíšený</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="testType">Typ testu:</label>
+                <select id="testType">
+                    <option value="input" selected>✏️ Psaní odpovědi</option>
+                    <option value="choice">✅ Výběr z možností</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="startTest()">Začít test</button>
+            <button class="btn-secondary" onclick="quickTest()">Rychlý test (10 otázek)</button>
+        </div>
+
+        <!-- Test Active -->
+        <div id="test-active" style="display: none;">
+            <div class="test-header">
+                <div id="questionCounter">1 / 10</div>
+                <div id="currentScore">Skóre: 0</div>
+                <button class="btn-danger" onclick="endTest()">Ukončit</button>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progressBar" class="progress-fill"></div>
+            </div>
+
+            <div class="question-card">
+                <div id="questionDirection">🇨🇿 → 🇬🇧</div>
+                <h1 id="questionText">slovíčko</h1>
+
+                <!-- Input Answer -->
+                <div id="inputAnswer">
+                    <input type="text" id="answerInput" placeholder="Napište překlad..." autocomplete="off">
+                    <button class="btn-primary" onclick="checkAnswer()">Odpovědět</button>
+                </div>
+
+                <!-- Choice Answer -->
+                <div id="choiceAnswer" style="display: none;">
+                    <div id="choiceButtons"></div>
+                </div>
+
+                <button class="btn-secondary" onclick="skipQuestion()">Přeskočit</button>
+
+                <div id="feedback" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div id="test-results" style="display: none;">
+            <div class="results-card">
+                <h2>🎉 Výsledky testu</h2>
+                <div class="score-circle">
+                    <span id="finalScore">85%</span>
+                </div>
+                <div id="scoreDetails">8 z 10 správně</div>
+
+                <div id="wrongAnswers"></div>
+
+                <div class="results-actions">
+                    <button class="btn-primary" onclick="restartTest()">Nový test</button>
+                    <button class="btn-secondary" onclick="reviewMistakes()">Procvičit chyby</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vocabulary Screen -->
+    <div class="screen" id="vocabulary-screen">
+        <div class="card">
+            <h2>📚 Správa slovíček</h2>
+
+            <!-- Add new vocabulary -->
+            <div class="add-vocab">
+                <h3>Přidat nové slovíčko</h3>
+                <div class="input-group">
+                    <input type="text" id="newCzech" placeholder="České slovo">
+                    <input type="text" id="newEnglish" placeholder="Anglické slovo">
+                    <button class="btn-primary" onclick="addVocabulary()">Přidat</button>
+                </div>
+            </div>
+
+            <!-- CSV Import Section -->
+            <div class="csv-import">
+                <h3>📁 Hromadný import (CSV)</h3>
+                <p>Formát: české slovo;anglické slovo</p>
+                <div class="file-input-wrapper">
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                    <button class="btn-secondary" onclick="document.getElementById('csvFileInput').click()">
+                        📂 Vybrat CSV soubor
+                    </button>
+                    <span id="csvFileName" class="file-name"></span>
+                </div>
+                <button class="btn-primary" onclick="importCSV()" id="importCSVBtn" disabled>
+                    📥 Importovat slovíčka
+                </button>
+            </div>
+
+            <!-- Search and filter -->
+            <div class="search-bar">
+                <input type="text" id="searchVocab" placeholder="Hledat slovíčka..." oninput="filterVocabulary()">
+            </div>
+
+            <!-- Vocabulary list -->
+            <div id="vocabularyList" class="vocab-list"></div>
+
+            <div id="vocabularyStats" class="stats-summary"></div>
+        </div>
+    </div>
+
+    <!-- Camera Screen -->
+    <div class="screen" id="camera-screen">
+        <div class="card">
+            <h2>📷 Skenování textu</h2>
+
+            <div class="camera-section">
+                <div id="cameraPreview" class="camera-preview">
+                    <video id="camera" autoplay muted playsinline style="display: none;"></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <div class="camera-placeholder">
+                        <p>📷</p>
+                        <p>Kamera není aktivní</p>
+                    </div>
+                </div>
+
+                <div class="camera-controls">
+                    <button id="startCamera" class="btn-primary" onclick="startCamera()">Spustit kameru</button>
+                    <button id="takePhoto" class="btn-primary" onclick="takePhoto()" style="display: none;">Vyfotit</button>
+                    <button id="stopCamera" class="btn-secondary" onclick="stopCamera()" style="display: none;">Zastavit</button>
+                </div>
+            </div>
+
+            <div class="file-upload">
+                <h3>Nebo nahrát obrázek</h3>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <div id="ocrResults" class="ocr-results"></div>
+        </div>
+    </div>
+
+    <!-- Statistics Screen -->
+    <div class="screen" id="stats-screen">
+        <div class="card">
+            <h2>📊 Statistiky</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWords">0</div>
+                    <div class="stat-label">Celkem slovíček</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTests">0</div>
+                    <div class="stat-label">Provedených testů</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="avgScore">0%</div>
+                    <div class="stat-label">Průměrné skóre</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-label">Série úspěchů</div>
+                </div>
+            </div>
+
+            <div class="difficult-words">
+                <h3>🔥 Problematická slovíčka</h3>
+                <div id="difficultWordsList"></div>
+            </div>
+
+            <div class="progress-chart">
+                <h3>📈 Pokrok</h3>
+                <canvas id="progressChart" width="300" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="app.js"></script>
+
+    <!-- Enter key support -->
     <script>
-        // Service Worker registrace
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(error => console.log('SW registration failed'));
-            });
-        }
-
-        // Funkce pro výběr počtu otázek
-        function updateQuestionCount() {
-            const customInput = document.getElementById('customQuestionCount');
-            const select = document.getElementById('questionCount');
-            if (customInput.value > 0 && customInput.value <= 100) {
-                select.value = 'custom';
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const activeScreen = document.querySelector('.screen.active');
+            if (activeScreen && activeScreen.id === 'test-screen') {
+                const answerInput = document.getElementById('answerInput');
+                if (answerInput && answerInput.style.display !== 'none' && document.activeElement === answerInput) {
+                    checkAnswer();
+                }
+            }
+            if (activeScreen && activeScreen.id === 'vocabulary-screen') {
+                if (document.activeElement === document.getElementById('newCzech') || 
+                    document.activeElement === document.getElementById('newEnglish')) {
+                    addVocabulary();
+                }
             }
         }
-
-        function updateInputState() {
-            const select = document.getElementById('questionCount');
-            const customInput = document.getElementById('customQuestionCount');
-            if (select.value === 'all') {
-                customInput.disabled = true;
-                customInput.value = '';
-            } else if (select.value === 'custom') {
-                customInput.disabled = false;
-                customInput.focus();
-            } else {
-                customInput.disabled = true;
-                customInput.value = '';
-            }
-        }
+    });
     </script>
 </body>
 </html>
