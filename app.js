@@ -452,46 +452,7 @@ function deleteVocabulary(id) {
         showNotification('🗑️ Slovíčko smazáno');
     }
 }
-function importFromCSV(event) {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const csv = e.target.result;
-    // Očekáváme formát: cs;en
-    const lines = csv.split('\n');
-    let newWords = [];
-    let maxId = Math.max(...vocabulary.map(w => w.id));
-
-    lines.forEach((line, index) => {
-      if (!line.trim()) return;
-      const [cs, en] = line.split(';').map(s => s.trim());
-      if (cs && en) {
-        newWords.push({
-          id: ++maxId,
-          cs: cs,
-          en: en,
-          dateAdded: new Date(),
-          correctCount: 0,
-          wrongCount: 0
-        });
-      }
-    });
-
-    // Přidej nová slovíčka, pokud ještě nejsou v seznamu (podle cs;en)
-    newWords.forEach(newWord => {
-      if (!vocabulary.some(w => w.cs === newWord.cs && w.en === newWord.en)) {
-        vocabulary.push(newWord);
-      }
-    });
-
-    saveData();
-    displayVocabulary();
-    showNotification('Slovíčka byla načtena z CSV.', 'success');
-  };
-  reader.readAsText(file);
-}
 
 
 // ===== KAMERA A OCR =====
