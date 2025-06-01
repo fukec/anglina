@@ -156,6 +156,15 @@
             </div>
         </div>
 
+        <div class="add-vocab-form">
+  <!-- ...existující formulář... -->
+  <input type="file" id="csvImport" accept=".csv" hidden onchange="importFromCSV(event)">
+  <button class="btn" onclick="document.getElementById('csvImport').click()">
+    Importovat z CSV
+  </button>
+</div>
+
+
         <!-- Screen: Camera/OCR -->
         <div id="camera-screen" class="screen">
             <div class="screen-header">
